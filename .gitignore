@@ -1,0 +1,24 @@
+# Python 编译文件
+__pycache__/
+*.pyc
+
+# 数据集 (假设你把数据放在 data 目录下)
+data/
+dataset/
+
+# 模型权重 (非常重要，防止 .pth / .ckpt 文件撑爆仓库)
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+checkpoints/
+models/
+
+# 实验日志
+wandb/
+logs/
+*.log
+
+# 虚拟环境
+.venv/
+conda-env/

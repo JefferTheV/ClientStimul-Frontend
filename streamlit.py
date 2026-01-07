@@ -37,15 +37,8 @@ if not api_base:
 # --- 侧边栏 ---
 with st.sidebar:
     st.success(f"✅ 已连接后端: {api_base}")
-    st.title("⚙️ 设置 (API版)")
     
-    st.divider()
-    
-    st.subheader("生成参数")
-    temperature = st.slider("Temperature", 0.0, 2.0, 0.8)
-    # vLLM 的 max_tokens 逻辑
-    max_tokens = st.slider("Max Tokens", 128, 2048, 512)
-    top_p = st.slider("Top P", 0.0, 1.0, 0.9)
+
 
     st.divider()
     
@@ -166,9 +159,18 @@ if prompt := st.chat_input("输入你的咨询话语..."):
         api_messages = [
             {"role": "system", "content": build_system_prompt(persona_input)}
         ]
+        
         # 添加历史记录
         for m in st.session_state.messages:
-            api_messages.append({"role": m["role"], "content": m["content"]})
+            if m["role"] == "user":
+                # 用户消息直接添加
+                api_messages.append({"role": "user", "content": m["content"]})
+            else:
+                # 助手消息：解析并只提取 speech 部分，去除 thinking 和 label
+                parsed_hist = parse_response(m["content"])
+                # 只有当 speech 不为空时才添加（防止出现空消息报错）
+                if parsed_hist["speech"]:
+                    api_messages.append({"role": "assistant", "content": parsed_hist["speech"]})
 
         # 2. 调用 API
         try:
@@ -178,7 +180,7 @@ if prompt := st.chat_input("输入你的咨询话语..."):
                 model=MODEL_NAME,
                 messages=api_messages,
                 temperature=1.0,
-                max_tokens=256,
+                max_tokens=512,
                 top_p=0.9,
                 stop=["USER:", "user", "用户", "<|im_end|>"] # vLLM 通常会自动处理 eos_token
             )

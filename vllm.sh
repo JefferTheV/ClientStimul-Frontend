@@ -5,8 +5,8 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH -o logs/vllm.out
 #SBATCH -e logs/vllm.err
-#SBATCH -t 1:00:00
-#SBATCH --gres=gpu:nvidia_a100_80gb_pcie:1
+#SBATCH -t 2:00:00
+#SBATCH --gres=gpu:a100-sxm4-80gb:1
 #SBATCH --mem=512G
 
 . $HOME/miniconda3/etc/profile.d/conda.sh
